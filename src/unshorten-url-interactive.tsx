@@ -11,14 +11,23 @@ export default function UrlRedirectionList() {
 
   useEffect(() => {
     const init = async () => {
-      const selectedText = await getSelectedText();
-      const clipboardText = await Clipboard.readText();
-      const urlToFetch =
-        selectedText && isValidUrl(selectedText)
-          ? selectedText
-          : clipboardText && isValidUrl(clipboardText)
-            ? clipboardText
-            : "";
+      let urlToFetch = "";
+
+      try {
+        const selectedText = await getSelectedText();
+        if (selectedText && isValidUrl(selectedText)) {
+          urlToFetch = selectedText;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!urlToFetch) {
+        const clipboardText = await Clipboard.readText();
+        if (clipboardText && isValidUrl(clipboardText)) {
+          urlToFetch = clipboardText;
+        }
+      }
 
       if (urlToFetch) {
         fetchData(urlToFetch);
