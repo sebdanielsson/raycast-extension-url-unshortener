@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "url-unshortener",
   "title": "URL Unshortener",
-  "description": "Unshorten or expand those pesky shortened links in your clipboard or text selection, enhancing your privacy and security.",
+  "description": "Unshorten/expand those pesky short links in your clipboard or text selection, enhancing your privacy and security.",
   "icon": "icon.png",
   "author": "SebDanielsson",
   "categories": [
@@ -11,15 +11,15 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "unshorten-url-no-gui",
-      "title": "Unshorten URL to Clipboard",
-      "description": "Unshorten URL from current selection or clipboard to the clipboard.",
+      "name": "unshorten-url-quick",
+      "title": "Paste Unshortened URL",
+      "description": "Paste unshortened URL to your current app from selection or clipboard.",
       "mode": "no-view"
     },
     {
-      "name": "unshorten-url",
-      "title": "Unshorten URL Action",
-      "description": "Unshorten URL from current selection or clipboard and choose action.",
+      "name": "unshorten-url-interactive",
+      "title": "Unshorten URL",
+      "description": "Unshorten URL from current selection or clipboard and choose an action.",
       "mode": "view"
     }
   ],
@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.8",
-    "@types/node": "20.9.2",
-    "@types/react": "18.2.37",
+    "@types/node": "20.9.3",
+    "@types/react": "18.2.38",
     "eslint": "^8.54.0",
     "prettier": "^3.1.0",
     "typescript": "^5.2.2"
