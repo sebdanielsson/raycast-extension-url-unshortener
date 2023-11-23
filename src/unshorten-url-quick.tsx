@@ -1,10 +1,8 @@
-import { Clipboard, getSelectedText, showHUD } from "@raycast/api";
-import { isValidUrl, unshortenUrl } from "./utils";
+import { Clipboard, showHUD } from "@raycast/api";
+import { getUrlFromSelectionOrClipboard, unshortenUrl } from "./utils";
 
 export default async function Command() {
-  const selectedText = await getSelectedText();
-  const clipboardText = await Clipboard.readText();
-  const url = isValidUrl(selectedText) ? selectedText : clipboardText;
+  const url = await getUrlFromSelectionOrClipboard();
 
   if (!url) {
     showHUD("No url found in selection or clipboard");

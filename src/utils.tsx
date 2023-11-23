@@ -1,4 +1,4 @@
-import { Icon } from "@raycast/api";
+import { Clipboard, getSelectedText, Icon } from "@raycast/api";
 import { RedirectionStep } from "./types";
 import fetch from "node-fetch";
 
@@ -8,6 +8,26 @@ export function isValidUrl(url: string) {
     return true;
   } catch (_) {
     return false;
+  }
+}
+
+export async function getUrlFromSelectionOrClipboard(): Promise<string | undefined> {
+  try {
+    const selectedText = await getSelectedText();
+    if (selectedText && isValidUrl(selectedText)) {
+      return selectedText;
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unable to get selected text from frontmost application") {
+      console.log("Failed to get text from selection. Trying clipboard instead.");
+    } else {
+      console.error(error);
+    }
+  }
+
+  const clipboardText = await Clipboard.readText();
+  if (clipboardText && isValidUrl(clipboardText)) {
+    return clipboardText;
   }
 }
 

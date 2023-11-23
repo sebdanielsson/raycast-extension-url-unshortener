@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { ActionPanel, Action, Icon, List, Clipboard, getSelectedText, showToast, Toast } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, showToast, Toast } from "@raycast/api";
 import { RedirectionStep, FaviconUrls } from "./types";
-import { isValidUrl, unshortenUrl, getFaviconUrl } from "./utils";
+import { getUrlFromSelectionOrClipboard, isValidUrl, unshortenUrl, getFaviconUrl } from "./utils";
 
 export default function UrlRedirectionList() {
   const [redirectionSteps, setRedirectionSteps] = useState<RedirectionStep[]>([]);
@@ -11,26 +11,10 @@ export default function UrlRedirectionList() {
 
   useEffect(() => {
     const init = async () => {
-      let urlToFetch = "";
+      const url = await getUrlFromSelectionOrClipboard();
 
-      try {
-        const selectedText = await getSelectedText();
-        if (selectedText && isValidUrl(selectedText)) {
-          urlToFetch = selectedText;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-
-      if (!urlToFetch) {
-        const clipboardText = await Clipboard.readText();
-        if (clipboardText && isValidUrl(clipboardText)) {
-          urlToFetch = clipboardText;
-        }
-      }
-
-      if (urlToFetch) {
-        fetchData(urlToFetch);
+      if (url) {
+        fetchData(url);
       }
     };
 
