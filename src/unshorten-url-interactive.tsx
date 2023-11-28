@@ -37,21 +37,6 @@ export default function UrlRedirectionList() {
       }
     };
 
-    const fetchFavicons = async (steps: RedirectionStep[]) => {
-      const newFaviconUrls: { [key: string]: string | Icon } = {};
-
-      for (const step of steps) {
-        try {
-          const faviconUrl = getFaviconUrl(step.url);
-          newFaviconUrls[step.url] = faviconUrl || Icon.Globe;
-        } catch (error) {
-          newFaviconUrls[step.url] = Icon.Globe;
-        }
-      }
-
-      setFaviconUrls(newFaviconUrls);
-    };
-
     const handleFetchError = (error: unknown) => {
       if (error instanceof Error) {
         if (error.message.includes("getaddrinfo ENOTFOUND")) {
@@ -88,11 +73,29 @@ export default function UrlRedirectionList() {
     }
   };
 
+  const fetchFavicons = async (urlObjects: { url: string }[]) => {
+    const newFaviconUrls = { ...faviconUrls };
+
+    for (const urlObject of urlObjects) {
+      try {
+        const faviconUrl = getFaviconUrl(urlObject.url);
+        newFaviconUrls[urlObject.url] = faviconUrl || Icon.Globe;
+      } catch (error) {
+        newFaviconUrls[urlObject.url] = Icon.Globe;
+      }
+    }
+
+    setFaviconUrls(newFaviconUrls);
+  };
+
   const onSearchTextChange = async (newText: string) => {
     setInitialUrl(newText);
 
     if (isValidUrl(newText)) {
-      fetchData(newText);
+      await fetchData(newText);
+      if (redirectionSteps.length === 0) {
+        await fetchFavicons([{ url: newText }]);
+      }
     } else {
       setRedirectionSteps([]);
     }
