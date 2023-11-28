@@ -54,7 +54,11 @@ export default function UrlRedirectionList() {
 
     const handleFetchError = (error: unknown) => {
       if (error instanceof Error) {
-        showToast(Toast.Style.Failure, error.message);
+        if (error.message.includes("getaddrinfo ENOTFOUND")) {
+          showToast(Toast.Style.Failure, "Cannot resolve host: " + error.message.split(" ")[2]);
+        } else {
+          showToast(Toast.Style.Failure, error.message);
+        }
       } else {
         showToast(Toast.Style.Failure, "An unknown error occurred");
       }
