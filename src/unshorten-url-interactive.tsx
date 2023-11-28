@@ -100,6 +100,7 @@ export default function UrlRedirectionList() {
       searchText={initialUrl}
       searchBarPlaceholder="Enter or paste a URL here"
       onSearchTextChange={onSearchTextChange}
+      throttle
     >
       {redirectionSteps.length < 1 ? (
         <List.EmptyView title="No URL found in text selection or clipboard" />
