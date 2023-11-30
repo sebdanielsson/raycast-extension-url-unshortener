@@ -9,15 +9,8 @@ export default function UrlRedirectionList() {
   const [initialUrl, setInitialUrl] = useState<string>("");
 
   const fetchData = async (url: string) => {
-    setIsLoading(true);
-    setRedirectionSteps([]);
-
-    if (!isValidUrl(url)) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      setIsLoading(true);
       const result = await unshortenUrl(url);
       setRedirectionSteps(result.redirectionSteps);
       await fetchFavicons(result.redirectionSteps);
@@ -36,16 +29,40 @@ export default function UrlRedirectionList() {
     }
   };
 
+  const fetchFavicons = async (steps: RedirectionStep[]) => {
+    return Promise.all(
+      steps.map(async (step: RedirectionStep) => {
+        try {
+          const faviconUrl = getFaviconUrl(step.url);
+          return { ...step, faviconUrl: faviconUrl || Icon.Globe };
+        } catch (error: unknown) {
+          return { ...step, faviconUrl: Icon.Globe };
+        }
+      }),
+    );
+  };
+
   useEffect(() => {
     const init = async () => {
       const url = await getUrlFromSelectionOrClipboard();
-      if (url) {
+      if (url && isValidUrl(url)) {
+        setInitialUrl(url);
         fetchData(url);
       }
     };
 
     init();
   }, []);
+
+  const onSearchTextChange = async (newText: string) => {
+    setInitialUrl(newText);
+
+    if (isValidUrl(newText)) {
+      await fetchData(newText);
+    } else {
+      setRedirectionSteps([]);
+    }
+  };
 
   useEffect(() => {
     const fetchFaviconsForSteps = async () => {
@@ -59,29 +76,6 @@ export default function UrlRedirectionList() {
       fetchFaviconsForSteps();
     }
   }, [redirectionSteps]);
-
-  const fetchFavicons = async (steps: RedirectionStep[]) => {
-    return Promise.all(
-      steps.map(async (step: RedirectionStep) => {
-        try {
-          const faviconUrl = await getFaviconUrl(step.url);
-          return { ...step, faviconUrl: faviconUrl || Icon.Globe };
-        } catch (error: unknown) {
-          return { ...step, faviconUrl: Icon.Globe };
-        }
-      }),
-    );
-  };
-
-  const onSearchTextChange = async (newText: string) => {
-    setInitialUrl(newText);
-
-    if (isValidUrl(newText)) {
-      await fetchData(newText);
-    } else {
-      setRedirectionSteps([]);
-    }
-  };
 
   return (
     <List
