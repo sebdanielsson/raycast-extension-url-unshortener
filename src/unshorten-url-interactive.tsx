@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { ActionPanel, Action, Icon, List, Color } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, LaunchProps } from "@raycast/api";
 import { RedirectionStep } from "./types";
-import { getUrlFromSelectionOrClipboard, isValidUrl, ensureHttpPrefix, unshortenUrl, getFaviconUrl } from "./utils";
+import {
+  getUrlFromSelectionOrClipboard,
+  isValidUrl,
+  ensureHttpPrefix,
+  unshortenUrl,
+  getFaviconUrl,
+  getTagColor,
+  getIcon,
+} from "./utils";
 
-export default function UrlRedirectionList() {
+export default function UrlRedirectionList(props: LaunchProps) {
   const [redirectionSteps, setRedirectionSteps] = useState<RedirectionStep[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialUrl, setInitialUrl] = useState<string>("");
@@ -44,7 +52,7 @@ export default function UrlRedirectionList() {
 
   useEffect(() => {
     const init = async () => {
-      const url = await getUrlFromSelectionOrClipboard();
+      const url = props.fallbackText || (await getUrlFromSelectionOrClipboard());
       if (url && isValidUrl(url)) {
         setInitialUrl(url);
         fetchData(url);
@@ -101,25 +109,9 @@ export default function UrlRedirectionList() {
                     {
                       tag: {
                         value: step.statusCode.toString(),
-                        color:
-                          step.statusCode >= 200 && step.statusCode < 300
-                            ? Color.Green
-                            : step.statusCode >= 300 && step.statusCode < 400
-                              ? Color.Yellow
-                              : step.statusCode >= 400 && step.statusCode < 600
-                                ? Color.Red
-                                : Color.PrimaryText,
+                        color: getTagColor(step.statusCode),
                       },
-                      icon:
-                        step.statusCode >= 100 && step.statusCode < 200
-                          ? Icon.Info
-                          : step.statusCode >= 200 && step.statusCode < 300
-                            ? Icon.CheckCircle
-                            : step.statusCode >= 300 && step.statusCode < 400
-                              ? Icon.ArrowClockwise
-                              : step.statusCode >= 400 && step.statusCode < 600
-                                ? Icon.XMarkCircle
-                                : Icon.QuestionMark,
+                      icon: getIcon(step.statusCode),
                     },
                   ]
                 : []
